@@ -1,0 +1,62 @@
+{
+    "name": "madnest/madstore-stripe",
+    "description": "Madstore Stripe",
+    "keywords": [
+        "madnest",
+        "madstore-stripe",
+        "laravel",
+        "ecommerce",
+        "payment-gateway"
+    ],
+    "homepage": "https://github.com/madnest/madstore-stripe",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Jakub Theimer",
+            "email": "theimer@madne.st",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "laravel/framework": "^7.0",
+        "illuminate/support": "^6.18|^7.0",
+        "cartalyst/stripe-laravel": "^12.0",
+        "madnest/madstore-framework": "dev-master"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.3",
+        "orchestra/testbench": "^5.1",
+        "phpunit/phpunit": "^8.0|^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Madnest\\MadstoreStripe\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Madnest\\MadstoreStripe\\Tests\\": "tests"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Madnest\\MadstoreStripe\\MadstoreStripeServiceProvider"
+            ],
+            "aliases": {
+                "MadstoreStripe": "Madnest\\MadstoreStripe\\MadstoreStripeFacade"
+            }
+        }
+    }
+}
