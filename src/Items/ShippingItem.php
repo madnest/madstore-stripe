@@ -6,7 +6,7 @@ class ShippingItem extends Item
 {
     public function __construct(string $name, int $amount, int $quantity = 1, int $vatRate = 21)
     {
-        $this->setType(''); // Set stripe shipping item
+        $this->setType('SHIPPING_ITEM');
 
         $this->setName($name);
 
