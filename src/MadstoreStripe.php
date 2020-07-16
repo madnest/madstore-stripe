@@ -4,6 +4,7 @@ namespace Madnest\MadstoreStripe;
 
 use Cartalyst\Stripe\Stripe;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Madnest\Madstore\Payment\Contracts\HasPayerInfo;
 use Madnest\Madstore\Payment\Contracts\PaymentOption;
 use Madnest\Madstore\Payment\Contracts\Purchasable;
@@ -57,18 +58,33 @@ class MadstoreStripe implements PaymentOption
      */
     public function getStatus($id): PaymentResponse
     {
-        $response = $this->stripe->paymentIntents()->find($id);
+        $response = $this->stripe->events()->find($id);
+
+        $eventType = $response['type'];
+
+        $objectType = $response['data']['object']['object'];
+        $objectId = $response['data']['object']['id'];
+
+        switch ($objectType) {
+            case 'charge':
+                $response = $this->stripe->charges()->find($objectId);
+                break;
+            case 'payment_intent':
+                $response = $this->stripe->paymentIntents()->find($objectId);
+                break;
+            default:
+                throw new InvalidArgumentException('Cannot handle this type of object.');
+        }
 
         return new PaymentResponse([
             'statusCode' => 200,
-            'status' => PaymentStatus::CREATED, // ???
+            'status' => $this->translateEventToPaymentStatus($eventType),
             'paymentId' => $response['id'],
             'orderNumber' => $response['description'],
             'amount' => $response['amount'],
             'currency' => strtoupper($response['currency']),
             'paymentMethod' => $response['payment_method'] ?? '',
             'gateway' => 'stripe',
-            'clientSecret' => $response['client_secret'],
             'redirect' => false,
         ]);
     }
@@ -177,5 +193,19 @@ class MadstoreStripe implements PaymentOption
                 'country_code' => $model->getCountryIso3Code(),
             ]
         ];
+    }
+
+    protected function translateEventToPaymentStatus(string $eventType): string
+    {
+        $translations = [
+            'payment_intent.succeeded' => PaymentStatus::PAID,
+            'charge.succeeded' => PaymentStatus::PAID,
+        ];
+
+        if (!array_key_exists($eventType, $translations)) {
+            return 'undefined';
+        }
+
+        return $translations[$eventType];
     }
 }
