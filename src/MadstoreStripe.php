@@ -35,11 +35,10 @@ class MadstoreStripe implements PaymentOption
     {
         $response = $this->stripe->paymentIntents()->create($this->mapParams($purchasable, $params, $options));
 
-        dd($response);
-
         return new PaymentResponse([
             'statusCode' => 200,
             'status' => PaymentStatus::CREATED,
+            'paymentId' => $response['id'],
             'orderNumber' => $response['description'],
             'amount' => $response['amount'],
             'currency' => strtoupper($response['currency']),
@@ -63,6 +62,7 @@ class MadstoreStripe implements PaymentOption
         return new PaymentResponse([
             'statusCode' => 200,
             'status' => PaymentStatus::CREATED, // ???
+            'paymentId' => $response['id'],
             'orderNumber' => $response['description'],
             'amount' => $response['amount'],
             'currency' => strtoupper($response['currency']),
