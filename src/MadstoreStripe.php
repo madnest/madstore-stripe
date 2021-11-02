@@ -104,7 +104,6 @@ class MadstoreStripe implements PaymentOption
             'currency' => strtolower($model->getCurrency()), // Stripe wants lowercase currency
             'description' => $model->getUUID(), // We use UUID to reffer back to given Order
             'metadata' => [],
-            'receipt_email' => $model->getPayerInfo()->getEmail(),
             // 'return_url' => config('madstore-stripe.return_url'),
         ];
 
